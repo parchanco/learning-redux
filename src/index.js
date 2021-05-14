@@ -1,17 +1,55 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { createStore } from 'redux'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const actionIncrement = {
+    type: '@counter/incremented'
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const actionDecremented = {
+    type: '@counter/decremented'
+}
+const actionReseted = {
+    type: '@counter/reseted'
+}
+
+const counterReducer = (state = 0, action) => {
+    switch (action.type) {
+        case '@counter/incremented':
+            return state + 1;
+        case '@counter/decremented':
+            return state - 1;
+        case '@counter/reseted':
+            return 0;
+        default:
+            return state //or throw error
+    }
+}
+
+const store = createStore(
+    counterReducer,
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+
+const App = () => {
+    return (
+        <div>
+            <div>
+                {store.getState()}
+            </div>
+            <button onClick={() => store.dispatch(actionIncrement)}>+</button>
+            <button onClick={() => store.dispatch(actionDecremented)}>-</button>
+            <button onClick={() => store.dispatch(actionReseted)}>Reset</button>
+
+        </div>
+    )
+}
+const renderApp = () => {
+    ReactDOM.render(
+        <App />,
+        document.getElementById('root')
+    );
+}
+// 1 tieme called
+renderApp()
+// each time the app changes is called
+store.subscribe(renderApp)
